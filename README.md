@@ -10,7 +10,7 @@ You can as well use drop_duplicates() on the data frame.
 Example:
 users_table = users_table.drop_duplicates(subset=['userId'])
 
-# result 
+# Result 
 There would be generated parquet files under a couple of folders in S3.
 # How to run the python scripts
 New console  > run etl.py 
