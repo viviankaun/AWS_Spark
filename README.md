@@ -11,6 +11,6 @@ Example:
 users_table = users_table.drop_duplicates(subset=['userId'])
 
 # result 
-There would be generate parquet files under the couple folder in S3.
+There would be generated parquet files under a couple of folders in S3.
 # How to run the python scripts
 New console  > run etl.py 
