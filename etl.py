@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 
-# 403 
+ 
 config = configparser.ConfigParser()
 config.read('dl.cfg')
 
@@ -14,6 +14,8 @@ os.environ['AWS_SECRET_ACCESS_KEY']=config['AWS']['AWS_SECRET_ACCESS_KEY']
 
 
 def create_spark_session():
+    #create Spark session 
+    
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -22,12 +24,15 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
+    """
+    Processing raw data using spark to be generated analytical data.
+    Read JSON files from input_data path and output parquet file to specified folder 
+    """  
     
     # get filepath to song data file
     song_data = input_data + 'song-data/A/A/A/*.json'
      
-    print(song_data)
-    
+    print(song_data) 
      
     # read song data file 
     df = spark.read.json(song_data)
@@ -58,6 +63,7 @@ def process_song_data(spark, input_data, output_data):
                                 artist_longitude
                                 FROM temp_songs
                                 WHERE artist_id IS NOT NULL
+                                Group by artist_id, artist_name, artist_location, artist_latitude, artist_longitude
                             """)
     
     # write artists table to parquet files
@@ -65,8 +71,12 @@ def process_song_data(spark, input_data, output_data):
 
 
 def process_log_data(spark, input_data, output_data):
+    """
+    Processing log data using spark to be generated analytical data.
+    Read JSON files from input_data path and output parquet file to specified folder 
+    """
     # get filepath to log data file
-    input_data ='./data/'
+    
     log_data = os.path.join(input_data, 'log-data/*.json') 
     # read log data file
      
@@ -79,16 +89,16 @@ def process_log_data(spark, input_data, output_data):
     df.createOrReplaceTempView("temp_logs")#
 
     # extract columns for users table    
-     
-    
     users_table = spark.sql("""
-                            SELECT DISTINCT userId as user_id, 
+                            SELECT userId as user_id, 
                             firstName as first_name,
                             lastName as last_name,
                             gender as gender,
                             level as level
                             FROM temp_logs
                             WHERE userId IS NOT NULL
+                            group by userId, firstName,lastName, gender,level
+                            
                         """)
     
     
@@ -140,7 +150,7 @@ def main():
     input_data = "s3a://udacity-dend/"
     output_data = "./"
     
-    process_song_data(spark, input_data, output_data)    
+    process_song_data(spark, input_data, output_data) 
     process_log_data(spark, input_data, output_data)
 
 
